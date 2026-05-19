@@ -18,19 +18,30 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: llm-response-consumer
+        - name: llm-response-connector
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          envFrom:
-            - configMapRef:
-                name: {{ include "llm-response-consumer.fullname" . }}
+          args:
+            - -c
+            - /etc/redpanda-connect/connect.yaml
           env:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.env.postgresAuthSecretName }}
                   key: {{ .Values.env.postgresAuthPasswordKey }}
+          volumeMounts:
+            - name: connector-config
+              mountPath: /etc/redpanda-connect
+              readOnly: true
           securityContext:
             {{- toYaml .Values.containerSecurityContext | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: connector-config
+          configMap:
+            name: {{ include "llm-response-consumer.fullname" . }}
+            items:
+              - key: connect.yaml
+                path: connect.yaml

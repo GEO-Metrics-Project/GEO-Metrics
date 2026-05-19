@@ -134,6 +134,8 @@ func (p *llmPlanner) handleMessage(msg *nats.Msg) error {
 					TranslatedText:   evt.Payload.TranslatedText,
 					Model:            model,
 					Region:           region,
+					BrandName:        evt.Payload.BrandName,
+					CompetitorNames:  evt.Payload.CompetitorNames,
 				},
 			}
 

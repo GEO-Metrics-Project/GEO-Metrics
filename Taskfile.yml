@@ -88,7 +88,7 @@ tasks:
           --wait --timeout 120s
 
   deploy:llm-response-consumer:
-    desc: Deploy llm response consumer service
+    desc: Deploy llm response connector
     cmds:
       - helm upgrade --install llm-response-consumer ./charts/llm-response-consumer
           -n {{.NAMESPACE}}
@@ -151,7 +151,7 @@ tasks:
       - kubectl rollout restart deployment/llm-worker -n {{.NAMESPACE}}
 
   restart:llm-response-consumer:
-    desc: Restart llm response consumer service
+    desc: Restart llm response connector
     cmds:
       - kubectl rollout restart deployment/llm-response-consumer -n {{.NAMESPACE}}
 

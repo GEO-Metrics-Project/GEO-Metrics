@@ -13,14 +13,16 @@ type llmJobCreatedEvent struct {
 }
 
 type llmJobPayload struct {
-	TranslationJobID string `json:"translation_job_id"`
-	PromptTemplate   string `json:"prompt_template"`
-	Keyword          string `json:"keyword"`
-	TargetLanguage   string `json:"target_language"`
-	SourceText       string `json:"source_text"`
-	TranslatedText   string `json:"translated_text"`
-	Model            string `json:"model"`
-	Region           string `json:"region"`
+	TranslationJobID string   `json:"translation_job_id"`
+	PromptTemplate   string   `json:"prompt_template"`
+	Keyword          string   `json:"keyword"`
+	TargetLanguage   string   `json:"target_language"`
+	SourceText       string   `json:"source_text"`
+	TranslatedText   string   `json:"translated_text"`
+	Model            string   `json:"model"`
+	Region           string   `json:"region"`
+	BrandName        string   `json:"brand_name"`
+	CompetitorNames  []string `json:"competitor_names"`
 }
 
 type llmCompletedEvent struct {
@@ -36,16 +38,26 @@ type llmCompletedEvent struct {
 }
 
 type llmCompletedPayload struct {
-	TranslationJobID string `json:"translation_job_id"`
-	PromptTemplate   string `json:"prompt_template"`
-	Keyword          string `json:"keyword"`
-	TargetLanguage   string `json:"target_language"`
-	SourceText       string `json:"source_text"`
-	TranslatedText   string `json:"translated_text"`
-	Model            string `json:"model"`
-	Region           string `json:"region"`
-	PromptText       string `json:"prompt_text"`
-	Response         string `json:"response"`
+	TranslationJobID string      `json:"translation_job_id"`
+	PromptTemplate   string      `json:"prompt_template"`
+	Keyword          string      `json:"keyword"`
+	TargetLanguage   string      `json:"target_language"`
+	SourceText       string      `json:"source_text"`
+	TranslatedText   string      `json:"translated_text"`
+	Model            string      `json:"model"`
+	Region           string      `json:"region"`
+	PromptText       string      `json:"prompt_text"`
+	Response         string      `json:"response"`
+	BrandName        string      `json:"brand_name"`
+	CompetitorNames  []string    `json:"competitor_names"`
+	KPIs             responseKPI `json:"kpis"`
+	KPIVersion       string      `json:"kpi_version"`
+}
+
+type responseKPI struct {
+	BrandMentioned        bool            `json:"brand_mentioned"`
+	BrandCitationWithLink bool            `json:"brand_citation_with_link"`
+	CompetitorMentions    map[string]bool `json:"competitor_mentions"`
 }
 
 type llmFailedEvent struct {

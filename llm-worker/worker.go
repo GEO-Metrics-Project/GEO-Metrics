@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -221,6 +222,7 @@ func decodeHuggingFaceResponse(body []byte) (string, error) {
 
 func (w *llmWorker) publishSuccess(job llmJobCreatedEvent, promptText, responseText string) error {
 	now := time.Now().UTC().Format(time.RFC3339)
+	kpi := calculateResponseKPI(responseText, job.Payload.BrandName, job.Payload.CompetitorNames)
 	evt := llmCompletedEvent{
 		EventID:       uuid.NewString(),
 		EventType:     "report.llm.completed",
@@ -241,6 +243,10 @@ func (w *llmWorker) publishSuccess(job llmJobCreatedEvent, promptText, responseT
 			Region:           job.Payload.Region,
 			PromptText:       promptText,
 			Response:         responseText,
+			BrandName:        job.Payload.BrandName,
+			CompetitorNames:  job.Payload.CompetitorNames,
+			KPIs:             kpi,
+			KPIVersion:       "v1",
 		},
 	}
 
@@ -291,4 +297,37 @@ func (w *llmWorker) Close() {
 	if w.conn != nil {
 		w.conn.Close()
 	}
+}
+
+func calculateResponseKPI(response, brandName string, competitorNames []string) responseKPI {
+	responseText := strings.ToLower(response)
+	brandMentioned := containsEntity(responseText, brandName)
+
+	competitorMentions := make(map[string]bool)
+	for _, competitor := range competitorNames {
+		if containsEntity(responseText, competitor) {
+			competitorMentions[competitor] = true
+		}
+	}
+
+	return responseKPI{
+		BrandMentioned:        brandMentioned,
+		BrandCitationWithLink: brandMentioned && containsCitationLink(responseText),
+		CompetitorMentions:    competitorMentions,
+	}
+}
+
+func containsEntity(text, entity string) bool {
+	entity = strings.TrimSpace(entity)
+	if entity == "" {
+		return false
+	}
+
+	re := regexp.MustCompile(`(?i)(^|[^\p{L}\p{N}])` + regexp.QuoteMeta(entity) + `($|[^\p{L}\p{N}])`)
+	return re.MatchString(text)
+}
+
+func containsCitationLink(text string) bool {
+	re := regexp.MustCompile(`https?://\S+|www\.\S+`)
+	return re.FindStringIndex(text) != nil
 }

@@ -143,13 +143,15 @@ func (p *translationPlanner) handleMessage(msg *nats.Msg) error {
 					JobID:         jobID,
 					SourceEventID: evt.EventID,
 					Payload: translationJobPayload{
-						PromptTemplate: template,
-						Keyword:        keyword,
-						TargetLanguage: targetLanguage,
-						SourceLanguage: "en",
-						SourceText:     sourceText,
-						Models:         models,
-						Regions:        regions,
+						PromptTemplate:  template,
+						Keyword:         keyword,
+						TargetLanguage:  targetLanguage,
+						SourceLanguage:  "en",
+						SourceText:      sourceText,
+						BrandName:       evt.Payload.BrandName,
+						CompetitorNames: evt.Payload.CompetitorNames,
+						Models:          models,
+						Regions:         regions,
 					},
 				}
 

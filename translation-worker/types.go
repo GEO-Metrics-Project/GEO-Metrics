@@ -13,13 +13,15 @@ type translationJobCreatedEvent struct {
 }
 
 type translationJobPayload struct {
-	PromptTemplate string `json:"prompt_template"`
-	Keyword        string `json:"keyword"`
-	TargetLanguage string `json:"target_language"`
-	SourceLanguage string `json:"source_language"`
-	SourceText     string `json:"source_text"`
-	Models         []string `json:"models"`
-	Regions        []string `json:"regions"`
+	PromptTemplate  string   `json:"prompt_template"`
+	Keyword         string   `json:"keyword"`
+	TargetLanguage  string   `json:"target_language"`
+	SourceLanguage  string   `json:"source_language"`
+	SourceText      string   `json:"source_text"`
+	BrandName       string   `json:"brand_name"`
+	CompetitorNames []string `json:"competitor_names"`
+	Models          []string `json:"models"`
+	Regions         []string `json:"regions"`
 }
 
 type translationCompletedEvent struct {
@@ -35,13 +37,15 @@ type translationCompletedEvent struct {
 }
 
 type translationCompletedPayload struct {
-	PromptTemplate string `json:"prompt_template"`
-	Keyword        string `json:"keyword"`
-	TargetLanguage string `json:"target_language"`
-	SourceText     string `json:"source_text"`
-	TranslatedText string `json:"translated_text"`
-	Models         []string `json:"models"`
-	Regions        []string `json:"regions"`
+	PromptTemplate  string   `json:"prompt_template"`
+	Keyword         string   `json:"keyword"`
+	TargetLanguage  string   `json:"target_language"`
+	SourceText      string   `json:"source_text"`
+	TranslatedText  string   `json:"translated_text"`
+	BrandName       string   `json:"brand_name"`
+	CompetitorNames []string `json:"competitor_names"`
+	Models          []string `json:"models"`
+	Regions         []string `json:"regions"`
 }
 
 type translationFailedEvent struct {
@@ -57,13 +61,15 @@ type translationFailedEvent struct {
 }
 
 type translationFailedPayload struct {
-	PromptTemplate string `json:"prompt_template"`
-	Keyword        string `json:"keyword"`
-	TargetLanguage string `json:"target_language"`
-	SourceText     string `json:"source_text"`
-	ErrorMessage   string `json:"error_message"`
-	Models         []string `json:"models"`
-	Regions        []string `json:"regions"`
+	PromptTemplate  string   `json:"prompt_template"`
+	Keyword         string   `json:"keyword"`
+	TargetLanguage  string   `json:"target_language"`
+	SourceText      string   `json:"source_text"`
+	ErrorMessage    string   `json:"error_message"`
+	BrandName       string   `json:"brand_name"`
+	CompetitorNames []string `json:"competitor_names"`
+	Models          []string `json:"models"`
+	Regions         []string `json:"regions"`
 }
 
 type libreTranslateRequest struct {

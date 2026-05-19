@@ -1,14 +1,14 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/geo-metrics-project/geo-metrics/llm-response-consumer
-  tag: "latest"
-  pullPolicy: Always
+  repository: docker.redpanda.com/redpandadata/connect
+  tag: "v4.44.1"
+  pullPolicy: IfNotPresent
 
 env:
   natsUrl: "nats://nats:4222"
   natsStream: "REPORTS"
-  natsConsumer: "llm-response-consumer-writer"
+  natsConsumer: "llm-response-connector-writer"
   natsConsumeSubject: "reports.llm.>"
   postgresHost: "postgres-postgresql"
   postgresPort: "5432"
@@ -17,6 +17,10 @@ env:
   postgresSslMode: "disable"
   postgresAuthSecretName: "postgres-auth"
   postgresAuthPasswordKey: "password"
+
+connector:
+  logLevel: "INFO"
+  shutdownTimeout: "20s"
 
 resources:
   requests:
@@ -37,7 +41,7 @@ containerSecurityContext:
   allowPrivilegeEscalation: false
   runAsNonRoot: true
   runAsUser: 1000
-  readOnlyRootFilesystem: true
+  readOnlyRootFilesystem: false
   capabilities:
     drop:
       - ALL

@@ -44,11 +44,13 @@ type translationJobCreatedEvent struct {
 }
 
 type translationJobPayload struct {
-	PromptTemplate string `json:"prompt_template"`
-	Keyword        string `json:"keyword"`
-	TargetLanguage string `json:"target_language"`
-	SourceLanguage string `json:"source_language"`
-	SourceText     string `json:"source_text"`
-	Models         []string `json:"models"`
-	Regions        []string `json:"regions"`
+	PromptTemplate  string   `json:"prompt_template"`
+	Keyword         string   `json:"keyword"`
+	TargetLanguage  string   `json:"target_language"`
+	SourceLanguage  string   `json:"source_language"`
+	SourceText      string   `json:"source_text"`
+	BrandName       string   `json:"brand_name"`
+	CompetitorNames []string `json:"competitor_names"`
+	Models          []string `json:"models"`
+	Regions         []string `json:"regions"`
 }
