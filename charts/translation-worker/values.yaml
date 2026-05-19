@@ -13,6 +13,7 @@ env:
   natsResultSubject: "reports.translation.completed"
   natsErrorSubject: "reports.translation.failed"
   libretranslateUrl: "http://libretranslate:5000"
+  libretranslateSourceLang: "auto"
   libretranslateApiKey: ""
 
 resources:

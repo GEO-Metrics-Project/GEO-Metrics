@@ -25,6 +25,7 @@ type translationWorker struct {
 	resultSubject  string
 	errorSubject   string
 	libreURL       string
+	libreSource    string
 	libreAPIKey    string
 	httpClient     *http.Client
 }
@@ -56,6 +57,7 @@ func newTranslationWorker(cfg config) (*translationWorker, error) {
 		resultSubject:  cfg.NATSResultSubject,
 		errorSubject:   cfg.NATSErrorSubject,
 		libreURL:       strings.TrimRight(cfg.LibreURL, "/"),
+		libreSource:    strings.TrimSpace(cfg.LibreSourceLang),
 		libreAPIKey:    cfg.LibreAPIKey,
 		httpClient: &http.Client{
 			Timeout: 20 * time.Second,
@@ -117,7 +119,7 @@ func (w *translationWorker) handleMessage(msg *nats.Msg) error {
 		return errors.New("invalid event: report_id and job_id are required")
 	}
 
-	translatedText, err := w.translate(evt.Payload.SourceText, evt.Payload.TargetLanguage)
+	translatedText, err := w.translate(evt.Payload.SourceText, evt.Payload.SourceLanguage, evt.Payload.TargetLanguage)
 	if err != nil {
 		if publishErr := w.publishFailure(evt, err); publishErr != nil {
 			msg.Nak()
@@ -136,9 +138,18 @@ func (w *translationWorker) handleMessage(msg *nats.Msg) error {
 	return nil
 }
 
-func (w *translationWorker) translate(sourceText, targetLanguage string) (string, error) {
+func (w *translationWorker) translate(sourceText, sourceLanguage, targetLanguage string) (string, error) {
+	source := strings.TrimSpace(sourceLanguage)
+	if source == "" || strings.EqualFold(source, "detect") {
+		source = strings.TrimSpace(w.libreSource)
+	}
+	if source == "" {
+		source = "auto"
+	}
+
 	reqBody := libreTranslateRequest{
 		Q:      sourceText,
+		Source: source,
 		Target: targetLanguage,
 		Format: "text",
 		APIKey: w.libreAPIKey,
