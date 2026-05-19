@@ -25,7 +25,6 @@ type translationWorker struct {
 	resultSubject  string
 	errorSubject   string
 	libreURL       string
-	libreSource    string
 	libreAPIKey    string
 	httpClient     *http.Client
 }
@@ -57,7 +56,6 @@ func newTranslationWorker(cfg config) (*translationWorker, error) {
 		resultSubject:  cfg.NATSResultSubject,
 		errorSubject:   cfg.NATSErrorSubject,
 		libreURL:       strings.TrimRight(cfg.LibreURL, "/"),
-		libreSource:    cfg.LibreSourceLang,
 		libreAPIKey:    cfg.LibreAPIKey,
 		httpClient: &http.Client{
 			Timeout: 20 * time.Second,
@@ -141,7 +139,6 @@ func (w *translationWorker) handleMessage(msg *nats.Msg) error {
 func (w *translationWorker) translate(sourceText, targetLanguage string) (string, error) {
 	reqBody := libreTranslateRequest{
 		Q:      sourceText,
-		Source: w.libreSource,
 		Target: targetLanguage,
 		Format: "text",
 		APIKey: w.libreAPIKey,

@@ -8,6 +8,5 @@ type config struct {
 	NATSResultSubject  string `env:"NATS_RESULT_SUBJECT,required"`
 	NATSErrorSubject   string `env:"NATS_ERROR_SUBJECT,required"`
 	LibreURL           string `env:"LIBRETRANSLATE_URL,required"`
-	LibreSourceLang    string `env:"LIBRETRANSLATE_SOURCE_LANG,default=en"`
 	LibreAPIKey        string `env:"LIBRETRANSLATE_API_KEY"`
 }

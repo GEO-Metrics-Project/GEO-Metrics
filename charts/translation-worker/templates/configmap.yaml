@@ -12,5 +12,4 @@ data:
   NATS_RESULT_SUBJECT: {{ .Values.env.natsResultSubject | quote }}
   NATS_ERROR_SUBJECT: {{ .Values.env.natsErrorSubject | quote }}
   LIBRETRANSLATE_URL: {{ .Values.env.libretranslateUrl | quote }}
-  LIBRETRANSLATE_SOURCE_LANG: {{ .Values.env.libretranslateSourceLang | quote }}
   LIBRETRANSLATE_API_KEY: {{ .Values.env.libretranslateApiKey | quote }}
