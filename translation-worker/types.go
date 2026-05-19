@@ -74,7 +74,7 @@ type translationFailedPayload struct {
 
 type libreTranslateRequest struct {
 	Q      string `json:"q"`
-	Source string `json:"source"`
+	Source string `json:"source,omitempty"`
 	Target string `json:"target"`
 	Format string `json:"format"`
 	APIKey string `json:"api_key,omitempty"`

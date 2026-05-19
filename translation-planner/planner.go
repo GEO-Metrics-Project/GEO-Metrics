@@ -146,7 +146,7 @@ func (p *translationPlanner) handleMessage(msg *nats.Msg) error {
 						PromptTemplate:  template,
 						Keyword:         keyword,
 						TargetLanguage:  targetLanguage,
-						SourceLanguage:  "en",
+						SourceLanguage:  "auto",
 						SourceText:      sourceText,
 						BrandName:       evt.Payload.BrandName,
 						CompetitorNames: evt.Payload.CompetitorNames,

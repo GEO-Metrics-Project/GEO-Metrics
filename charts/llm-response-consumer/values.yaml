@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: docker.redpanda.com/redpandadata/connect
-  tag: "v4.44.1"
+  repository: redpandadata/connect
+  tag: "latest"
   pullPolicy: IfNotPresent
 
 env:
