@@ -90,7 +90,10 @@ tasks:
   deploy:llm-response-consumer:
     desc: Deploy llm response connector
     cmds:
-      - helm upgrade --install llm-response-consumer ./charts/llm-response-consumer
+      - helm repo add redpanda https://charts.redpanda.com/
+      - helm repo update
+      - helm upgrade --install llm-response-consumer redpanda/connect
+          -f infra/llm-response-consumer/values.yaml
           -n {{.NAMESPACE}}
           --wait --timeout 120s
 

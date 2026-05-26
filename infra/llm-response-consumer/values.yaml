@@ -1,0 +1,125 @@
+image:
+  repository: docker.redpanda.com/redpandadata/connect
+  pullPolicy: Always
+
+fullnameOverride: llm-response-consumer
+nameOverride: llm-response-consumer
+
+deployment:
+  replicaCount: 1
+
+http:
+  enabled: false
+
+env:
+  - name: POSTGRES_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: postgres-auth
+        key: password
+
+config:
+  logger:
+    level: INFO
+
+  input:
+    nats_jetstream:
+      urls:
+        - nats://nats:4222
+      stream: REPORTS
+      subject: reports.llm.>
+      durable: llm-response-connector-writer
+
+  pipeline:
+    processors:
+      - mapping: |
+          root = if this.event_type == "report.llm.completed" {
+            {
+              "report_id": this.report_id,
+              "source_event_id": this.source_event_id,
+              "prompt_template": this.payload.prompt_template,
+              "region": this.payload.region,
+              "language_code": this.payload.target_language,
+              "keyword": this.payload.keyword,
+              "model": this.payload.model,
+              "prompt_text": this.payload.prompt_text,
+              "response": this.payload.response,
+              "kpis": this.payload.kpis.or({}),
+              "occurred_at": this.occurred_at,
+            }
+          } else {
+            deleted()
+          }
+
+  output:
+    sql_raw:
+      driver: postgres
+      dsn: "host=postgres-postgresql port=5432 dbname=geometrics user=geometrics password=${POSTGRES_PASSWORD} sslmode=disable"
+      query: |
+        INSERT INTO llm_responses (
+          report_id,
+          source_event_id,
+          prompt_template,
+          region,
+          language_code,
+          keyword,
+          model,
+          prompt_text,
+          response,
+          kpis,
+          status,
+          error_message,
+          occurred_at,
+          completed_at,
+          retry_count
+        )
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,'completed',NULL,$11::timestamptz,CURRENT_TIMESTAMP,0)
+        ON CONFLICT (report_id, prompt_template, region, language_code, keyword, model)
+        DO UPDATE SET
+          source_event_id = EXCLUDED.source_event_id,
+          prompt_text = EXCLUDED.prompt_text,
+          response = EXCLUDED.response,
+          kpis = EXCLUDED.kpis,
+          status = 'completed',
+          error_message = NULL,
+          retry_count = 0,
+          occurred_at = EXCLUDED.occurred_at,
+          completed_at = CURRENT_TIMESTAMP
+      args_mapping: |
+        root = [
+          this.report_id,
+          this.source_event_id,
+          this.prompt_template,
+          this.region,
+          this.language_code,
+          this.keyword,
+          this.model,
+          this.prompt_text,
+          this.response,
+          this.kpis.format_json(),
+          this.occurred_at,
+        ]
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 300m
+    memory: 256Mi
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  runAsUser: 1000
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop:
+      - ALL
